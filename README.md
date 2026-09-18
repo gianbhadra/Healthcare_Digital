@@ -45,7 +45,16 @@ CREATE TABLE health_history (
 
 ### 3. Konfigurasi Password Database
 
-Sesuaikan konfigurasi koneksi database Anda (terutama password) di dalam file `index.js` agar terhubung dengan PostgreSQL lokal Anda.
+Sesuaikan konfigurasi koneksi database Anda (terutama password) di dalam file `.env` agar terhubung dengan PostgreSQL lokal Anda.
+
+``DB_CONNECTION=pgsql
+DB_HOST=127.0.0.1
+DB_PORT=5432
+DB_DATABASE=sekolah_robotik
+DB_USERNAME=postgres
+DB_PASSWORD=isi_password_postgresql_anda
+
+```
 
 ### 4. Install Dependencies Flutter
 
@@ -74,6 +83,3 @@ node index.js
 
 ```
 
-```
-
-```
