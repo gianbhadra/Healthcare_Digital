@@ -1,13 +1,22 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
+
+const _apiHostOverride = String.fromEnvironment('API_HOST');
 
 class DatabaseHelper {
   static final DatabaseHelper instance = DatabaseHelper._init();
-  
-  // CATATAN URL:
-  // - Jika pakai Emulator Android: gunakan 'http://10.0.2.2:3000/api'
-  // - Jika pakai HP Fisik (terhubung Wi-Fi yang sama dengan laptop): gunakan 'http://IP_LAPTOP_ANDA:3000/api'
-  final String baseUrl = 'http://10.0.2.2:3000/api';
+
+  String get baseUrl {
+    if (_apiHostOverride.isNotEmpty) {
+      return '${_apiHostOverride.replaceAll(RegExp(r'/$'), '')}/api';
+    }
+    if (kIsWeb) return 'http://localhost:3000/api';
+    if (defaultTargetPlatform == TargetPlatform.android) {
+      return 'http://10.0.2.2:3000/api';
+    }
+    return 'http://localhost:3000/api';
+  }
 
   DatabaseHelper._init();
 
