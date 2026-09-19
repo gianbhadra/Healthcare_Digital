@@ -1,7 +1,9 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../services/database_helper.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/custom_logo.dart';
+import 'add_edit_member_screen.dart';
 
 class MemberDataScreen extends StatefulWidget {
   const MemberDataScreen({super.key});
@@ -11,39 +13,10 @@ class MemberDataScreen extends StatefulWidget {
 }
 
 class _MemberDataScreenState extends State<MemberDataScreen> {
+  String _selectedFilter = 'Semua';
   String _searchQuery = '';
+  List<Map<String, dynamic>> _membersList = [];
 
-  // Daftar anggota tetap. Kolom 'nim' berisi NIM masing-masing anggota.
-  static const List<Map<String, String>> _members = [
-    {
-      'name': 'GIAN BAHDRA Q K',
-      'nim': '124240016',
-      'gender': 'Laki-laki',
-    },
-    {
-      'name': 'SEPIAN EKA NUGRAHA',
-      'nim': '124240028',
-      'gender': 'Laki-laki',
-    },
-    {
-      'name': 'RIFQY RAHMAD L H',
-      'nim': '124240169',
-      'gender': 'Laki-laki',
-    },
-    {
-      'name': 'ILHAMSYAH ADI K',
-      'nim': '124240198',
-      'gender': 'Laki-laki',
-    },
-  ];
-
-<<<<<<< HEAD
-  List<Map<String, String>> get _filteredMembers {
-    final query = _searchQuery.toLowerCase();
-    return _members.where((m) {
-      return m['name']!.toLowerCase().contains(query) ||
-          m['nim']!.contains(_searchQuery);
-=======
   static final List<Map<String, dynamic>> _defaultMembers = [
     {
       'id': '1',
@@ -54,7 +27,7 @@ class _MemberDataScreenState extends State<MemberDataScreen> {
       'nik': '3201011405020001',
       'blood': 'A+',
       'isElderly': false,
-      'avatarIcon': Icons.person_outline_rounded.codePoint,
+      'avatarIcon': Icons.person_outline_rounded,
     },
     {
       'id': '2',
@@ -65,7 +38,7 @@ class _MemberDataScreenState extends State<MemberDataScreen> {
       'nik': '3201010908990002',
       'blood': 'O+',
       'isElderly': false,
-      'avatarIcon': Icons.person_outline_rounded.codePoint,
+      'avatarIcon': Icons.person_outline_rounded,
     },
     {
       'id': '3',
@@ -76,7 +49,7 @@ class _MemberDataScreenState extends State<MemberDataScreen> {
       'nik': '3201012203010003',
       'blood': 'B+',
       'isElderly': false,
-      'avatarIcon': Icons.person_outline_rounded.codePoint,
+      'avatarIcon': Icons.person_outline_rounded,
     },
     {
       'id': '4',
@@ -87,14 +60,12 @@ class _MemberDataScreenState extends State<MemberDataScreen> {
       'nik': '3201011811970004',
       'blood': 'AB+',
       'isElderly': false,
-      'avatarIcon': Icons.person_outline_rounded.codePoint,
+      'avatarIcon': Icons.person_outline_rounded,
     },
   ];
 
-  IconData _memberIcon(dynamic codePoint) {
-    if (codePoint == Icons.person_outline_rounded.codePoint) {
-      return Icons.person_outline_rounded;
-    }
+  IconData _memberIcon(dynamic icon) {
+    if (icon is IconData) return icon;
     return Icons.person_outline_rounded;
   }
 
@@ -143,8 +114,236 @@ class _MemberDataScreenState extends State<MemberDataScreen> {
         return m['isElderly'] == true;
       }
       return true;
->>>>>>> 91af534 (update tampilan)
     }).toList();
+  }
+
+  void _showDetailDialog(Map<String, dynamic> member) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          title: Row(
+            children: [
+              CircleAvatar(
+                backgroundColor: AppColors.lightTealBg,
+                child: Icon(
+                  _memberIcon(member['avatarIcon']),
+                  color: AppColors.primaryTeal,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      member['name'] as String,
+                      style: GoogleFonts.plusJakartaSans(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w800,
+                        color: AppColors.textDark,
+                      ),
+                    ),
+                    Text(
+                      'Detail Rekam Pasien',
+                      style: GoogleFonts.plusJakartaSans(
+                        fontSize: 12,
+                        color: AppColors.textMuted,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _DetailRow(label: 'NIK lengkap', value: member['nik'] as String),
+              _DetailRow(label: 'Tanggal Lahir', value: member['dob'] as String),
+              _DetailRow(label: 'Usia', value: member['age'] as String),
+              _DetailRow(label: 'Jenis Kelamin', value: member['gender'] as String),
+              _DetailRow(label: 'Golongan Darah', value: member['blood'] as String),
+              _DetailRow(label: 'Status BPJS', value: 'Aktif (Kelas 1)'),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text(
+                'Tutup',
+                style: GoogleFonts.plusJakartaSans(
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.primaryTeal,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showDeleteDialog(Map<String, dynamic> member) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          title: Text(
+            'Hapus Data Anggota?',
+            style: GoogleFonts.plusJakartaSans(
+              fontWeight: FontWeight.w800,
+              color: AppColors.textDark,
+            ),
+          ),
+          content: Text(
+            'Apakah Anda yakin ingin menghapus "${member['name']}" dari daftar anggota keluarga?',
+            style: GoogleFonts.plusJakartaSans(
+              fontSize: 13,
+              color: AppColors.textMuted,
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text(
+                'Batal',
+                style: GoogleFonts.plusJakartaSans(
+                  color: AppColors.textMuted,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                final id = int.tryParse(member['id'].toString());
+                if (id != null) {
+                  await DatabaseHelper.instance.deleteMember(id);
+                }
+                if (!mounted) return;
+                Navigator.pop(context);
+                await _loadMembers();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      'Data ${member['name']} berhasil dihapus.',
+                      style: GoogleFonts.plusJakartaSans(),
+                    ),
+                    backgroundColor: Colors.redAccent,
+                  ),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.redAccent,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              child: Text(
+                'Hapus',
+                style: GoogleFonts.plusJakartaSans(
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _navigateToAddMember() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const AddEditMemberScreen(),
+      ),
+    );
+
+    if (result != null && result is Map<String, dynamic>) {
+      final inserted = await DatabaseHelper.instance.insertMember({
+        'name': result['name'],
+        'age': result['age'] ?? '20 th',
+        'dob': result['dob'] ?? '14 Mei 2004',
+        'gender': result['gender'] ?? 'Laki-laki',
+        'nik': result['nik'] ?? '3201••••1405',
+        'blood': result['blood'] ?? 'Gol. O',
+        'isElderly': 0,
+        'avatarIcon': Icons.person_outline_rounded.codePoint,
+      });
+
+      if (!mounted) return;
+      if (inserted != 1) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Gagal menyimpan anggota. Pastikan server dan database aktif.',
+              style: GoogleFonts.plusJakartaSans(),
+            ),
+            backgroundColor: Colors.redAccent,
+          ),
+        );
+        return;
+      }
+
+      await _loadMembers();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Anggota "${result['name']}" berhasil ditambahkan!',
+              style: GoogleFonts.plusJakartaSans(),
+            ),
+            backgroundColor: AppColors.primaryTeal,
+          ),
+        );
+      }
+    }
+  }
+
+  void _navigateToEditMember(Map<String, dynamic> member) async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AddEditMemberScreen(memberToEdit: member),
+      ),
+    );
+
+    if (result != null && result is Map<String, dynamic>) {
+      final id = int.tryParse(member['id'].toString());
+      if (id != null) {
+        await DatabaseHelper.instance.updateMember({
+          'name': result['name'],
+          'age': result['age'] ?? member['age'],
+          'dob': result['dob'],
+          'gender': result['gender'],
+          'nik': result['nik'],
+          'blood': result['blood'],
+          'isElderly': member['isElderly'] ? 1 : 0,
+          'avatarIcon': (member['avatarIcon'] as IconData).codePoint,
+        }, id);
+      }
+
+      await _loadMembers();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Data "${result['name']}" berhasil diperbarui!',
+              style: GoogleFonts.plusJakartaSans(),
+            ),
+            backgroundColor: AppColors.primaryTeal,
+          ),
+        );
+      }
+    }
   }
 
   @override
@@ -184,51 +383,87 @@ class _MemberDataScreenState extends State<MemberDataScreen> {
           SizedBox(width: 16),
         ],
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header Title with Back Button
-            Row(
+      body: Stack(
+        children: [
+          SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                GestureDetector(
-                  onTap: () => Navigator.pop(context),
-                  child: Container(
-                    width: 38,
-                    height: 38,
-                    decoration: const BoxDecoration(
-                      color: Color(0xFFEFF6FF),
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(
-                      Icons.arrow_back_rounded,
-                      color: AppColors.textDark,
-                      size: 20,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-<<<<<<< HEAD
-                    Text(
-                      'Data Anggota',
-                      style: GoogleFonts.plusJakartaSans(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w800,
-                        color: AppColors.textDark,
-                        letterSpacing: -0.4,
-                      ),
+                    Row(
+                      children: [
+                        GestureDetector(
+                          onTap: () => Navigator.pop(context),
+                          child: Container(
+                            width: 38,
+                            height: 38,
+                            decoration: const BoxDecoration(
+                              color: Color(0xFFEFF6FF),
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(
+                              Icons.arrow_back_rounded,
+                              color: AppColors.textDark,
+                              size: 20,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Data Anggota',
+                              style: GoogleFonts.plusJakartaSans(
+                                fontSize: 20,
+                                fontWeight: FontWeight.w800,
+                                color: AppColors.textDark,
+                                letterSpacing: -0.4,
+                              ),
+                            ),
+                            Text(
+                              '${_membersList.length} Pasien Terdaftar Aktif',
+                              style: GoogleFonts.plusJakartaSans(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w500,
+                                color: AppColors.textMuted,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
-                    Text(
-                      '${_members.length} Anggota',
-                      style: GoogleFonts.plusJakartaSans(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                        color: AppColors.textMuted,
-=======
+                    Row(
+                      children: const [
+                        CircleAvatar(
+                          radius: 18,
+                          backgroundColor: Color(0xFFEFF6FF),
+                          child: Icon(
+                            Icons.search_rounded,
+                            color: AppColors.textDark,
+                            size: 20,
+                          ),
+                        ),
+                        SizedBox(width: 8),
+                        CircleAvatar(
+                          radius: 18,
+                          backgroundColor: Color(0xFFEFF6FF),
+                          child: Icon(
+                            Icons.filter_list_rounded,
+                            color: AppColors.textDark,
+                            size: 20,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 18),
+                Row(
+                  children: [
                     Expanded(
                       child: Container(
                         decoration: BoxDecoration(
@@ -286,16 +521,11 @@ class _MemberDataScreenState extends State<MemberDataScreen> {
                         Icons.tune_rounded,
                         color: AppColors.primaryTeal,
                         size: 22,
->>>>>>> 91af534 (update tampilan)
                       ),
                     ),
                   ],
                 ),
-<<<<<<< HEAD
-=======
                 const SizedBox(height: 16),
-
-                // Filter Category Chips
                 SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   child: Row(
@@ -309,29 +539,24 @@ class _MemberDataScreenState extends State<MemberDataScreen> {
                       _FilterChipItem(
                         label: 'Laki-laki',
                         isSelected: _selectedFilter == 'Laki-laki',
-                        onTap: () =>
-                            setState(() => _selectedFilter = 'Laki-laki'),
+                        onTap: () => setState(() => _selectedFilter = 'Laki-laki'),
                       ),
                       const SizedBox(width: 8),
                       _FilterChipItem(
                         label: 'Perempuan',
                         isSelected: _selectedFilter == 'Perempuan',
-                        onTap: () =>
-                            setState(() => _selectedFilter = 'Perempuan'),
+                        onTap: () => setState(() => _selectedFilter = 'Perempuan'),
                       ),
                       const SizedBox(width: 8),
                       _FilterChipItem(
                         label: 'Lansia (>60)',
                         isSelected: _selectedFilter == 'Lansia (>60)',
-                        onTap: () =>
-                            setState(() => _selectedFilter = 'Lansia (>60)'),
+                        onTap: () => setState(() => _selectedFilter = 'Lansia (>60)'),
                       ),
                     ],
                   ),
                 ),
                 const SizedBox(height: 20),
-
-                // Patient Member Cards List
                 if (filtered.isEmpty)
                   Center(
                     child: Padding(
@@ -371,7 +596,6 @@ class _MemberDataScreenState extends State<MemberDataScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            // Member Top Header (Avatar, Name, Age, Blood Type)
                             Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -383,7 +607,7 @@ class _MemberDataScreenState extends State<MemberDataScreen> {
                                     shape: BoxShape.circle,
                                   ),
                                   child: Icon(
-                                    m['avatarIcon'] as IconData,
+                                    _memberIcon(m['avatarIcon']),
                                     color: const Color(0xFF0284C7),
                                     size: 24,
                                   ),
@@ -391,16 +615,14 @@ class _MemberDataScreenState extends State<MemberDataScreen> {
                                 const SizedBox(width: 14),
                                 Expanded(
                                   child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Row(
                                         children: [
                                           Flexible(
                                             child: Text(
                                               m['name'] as String,
-                                              style:
-                                                  GoogleFonts.plusJakartaSans(
+                                              style: GoogleFonts.plusJakartaSans(
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.w800,
                                                 color: AppColors.textDark,
@@ -409,8 +631,6 @@ class _MemberDataScreenState extends State<MemberDataScreen> {
                                             ),
                                           ),
                                           const SizedBox(width: 8),
-
-                                          // Age Badge
                                           Container(
                                             padding: const EdgeInsets.symmetric(
                                               horizontal: 8,
@@ -420,13 +640,11 @@ class _MemberDataScreenState extends State<MemberDataScreen> {
                                               color: m['isElderly'] == true
                                                   ? const Color(0xFFFED7AA)
                                                   : const Color(0xFFF1F5F9),
-                                              borderRadius:
-                                                  BorderRadius.circular(12),
+                                              borderRadius: BorderRadius.circular(12),
                                             ),
                                             child: Text(
                                               m['age'] as String,
-                                              style:
-                                                  GoogleFonts.plusJakartaSans(
+                                              style: GoogleFonts.plusJakartaSans(
                                                 fontSize: 11,
                                                 fontWeight: FontWeight.w700,
                                                 color: m['isElderly'] == true
@@ -459,8 +677,6 @@ class _MemberDataScreenState extends State<MemberDataScreen> {
                                     ],
                                   ),
                                 ),
-
-                                // Blood Type Badge Top Right
                                 Container(
                                   padding: const EdgeInsets.symmetric(
                                     horizontal: 10,
@@ -482,11 +698,8 @@ class _MemberDataScreenState extends State<MemberDataScreen> {
                               ],
                             ),
                             const SizedBox(height: 14),
-
-                            // Gender & NIK Badges Row
                             Row(
                               children: [
-                                // Gender Badge
                                 Container(
                                   padding: const EdgeInsets.symmetric(
                                     horizontal: 10,
@@ -523,8 +736,6 @@ class _MemberDataScreenState extends State<MemberDataScreen> {
                                   ),
                                 ),
                                 const SizedBox(width: 8),
-
-                                // NIK Badge
                                 Container(
                                   padding: const EdgeInsets.symmetric(
                                     horizontal: 10,
@@ -557,8 +768,6 @@ class _MemberDataScreenState extends State<MemberDataScreen> {
                               ],
                             ),
                             const SizedBox(height: 16),
-
-                            // Action Buttons (Detail, Edit, Delete)
                             Row(
                               children: [
                                 Expanded(
@@ -578,14 +787,11 @@ class _MemberDataScreenState extends State<MemberDataScreen> {
                                         ),
                                       ),
                                       style: ElevatedButton.styleFrom(
-                                        backgroundColor:
-                                            const Color(0xFFEFF6FF),
-                                        foregroundColor:
-                                            const Color(0xFF0284C7),
+                                        backgroundColor: const Color(0xFFEFF6FF),
+                                        foregroundColor: const Color(0xFF0284C7),
                                         elevation: 0,
                                         shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(10),
+                                          borderRadius: BorderRadius.circular(10),
                                         ),
                                       ),
                                     ),
@@ -609,14 +815,11 @@ class _MemberDataScreenState extends State<MemberDataScreen> {
                                         ),
                                       ),
                                       style: ElevatedButton.styleFrom(
-                                        backgroundColor:
-                                            const Color(0xFFEFF6FF),
-                                        foregroundColor:
-                                            const Color(0xFF0284C7),
+                                        backgroundColor: const Color(0xFFEFF6FF),
+                                        foregroundColor: const Color(0xFF0284C7),
                                         elevation: 0,
                                         shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(10),
+                                          borderRadius: BorderRadius.circular(10),
                                         ),
                                       ),
                                     ),
@@ -634,8 +837,7 @@ class _MemberDataScreenState extends State<MemberDataScreen> {
                                       elevation: 0,
                                       padding: EdgeInsets.zero,
                                       shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(10),
+                                        borderRadius: BorderRadius.circular(10),
                                       ),
                                     ),
                                     child: const Icon(
@@ -652,207 +854,102 @@ class _MemberDataScreenState extends State<MemberDataScreen> {
                     },
                   ),
                 const SizedBox(height: 80),
->>>>>>> 91af534 (update tampilan)
               ],
             ),
-            const SizedBox(height: 18),
-
-            // Search Input
-            Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.02),
-                    blurRadius: 10,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
+          ),
+          Positioned(
+            bottom: 20,
+            right: 20,
+            child: FloatingActionButton.extended(
+              onPressed: _navigateToAddMember,
+              backgroundColor: const Color(0xFF006D5B),
+              elevation: 4,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(24),
               ),
-              child: TextField(
-                onChanged: (val) => setState(() => _searchQuery = val),
-                decoration: InputDecoration(
-                  hintText: 'Cari nama atau NIM anggota...',
-                  hintStyle: GoogleFonts.plusJakartaSans(
-                    color: AppColors.textLight,
-                    fontSize: 14,
-                  ),
-                  prefixIcon: const Icon(
-                    Icons.search_rounded,
-                    color: AppColors.textMuted,
-                    size: 20,
-                  ),
-                  border: InputBorder.none,
-                  contentPadding: const EdgeInsets.symmetric(vertical: 14),
+              icon: const Icon(
+                Icons.person_add_alt_1_rounded,
+                color: Colors.white,
+                size: 20,
+              ),
+              label: Text(
+                'Tambah Anggota',
+                style: GoogleFonts.plusJakartaSans(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.white,
                 ),
               ),
             ),
-            const SizedBox(height: 20),
+          ),
+        ],
+      ),
+    );
+  }
+}
 
-            // Member Cards List
-            if (filtered.isEmpty)
-              Center(
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 40),
-                  child: Text(
-                    'Tidak ada data anggota ditemukan',
-                    style: GoogleFonts.plusJakartaSans(
-                      color: AppColors.textMuted,
-                      fontSize: 14,
-                    ),
-                  ),
-                ),
-              )
-            else
-              ListView.separated(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: filtered.length,
-                separatorBuilder: (ctx, idx) => const SizedBox(height: 16),
-                itemBuilder: (context, index) {
-                  final m = filtered[index];
-                  return _MemberCard(
-                    name: m['name']!,
-                    nim: m['nim']!,
-                    gender: m['gender']!,
-                  );
-                },
-              ),
-            const SizedBox(height: 20),
-          ],
+class _FilterChipItem extends StatelessWidget {
+  final String label;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const _FilterChipItem({
+    required this.label,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 180),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          color: isSelected ? const Color(0xFF006D5B) : const Color(0xFFEFF6FF),
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Text(
+          label,
+          style: GoogleFonts.plusJakartaSans(
+            fontSize: 12,
+            fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
+            color: isSelected ? Colors.white : const Color(0xFF334155),
+          ),
         ),
       ),
     );
   }
 }
 
-class _MemberCard extends StatelessWidget {
-  final String name;
-  final String nim;
-  final String gender;
+class _DetailRow extends StatelessWidget {
+  final String label;
+  final String value;
 
-  const _MemberCard({
-    required this.name,
-    required this.nim,
-    required this.gender,
-  });
+  const _DetailRow({required this.label, required this.value});
 
   @override
   Widget build(BuildContext context) {
-    final bool isMale = gender == 'Laki-laki';
-    final Color genderColor =
-        isMale ? const Color(0xFF0369A1) : const Color(0xFFC2410C);
-
-    return Container(
-      padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
-            blurRadius: 14,
-            offset: const Offset(0, 6),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Row(
-            children: [
-              Container(
-                width: 48,
-                height: 48,
-                decoration: const BoxDecoration(
-                  color: Color(0xFFE8F3FF),
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(
-                  Icons.person_outline_rounded,
-                  color: Color(0xFF0284C7),
-                  size: 24,
-                ),
-              ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Text(
-                  name,
-                  style: GoogleFonts.plusJakartaSans(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w800,
-                    color: AppColors.textDark,
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-            ],
+          Text(
+            label,
+            style: GoogleFonts.plusJakartaSans(
+              fontSize: 12,
+              color: AppColors.textMuted,
+            ),
           ),
-          const SizedBox(height: 14),
-          Row(
-            children: [
-              // Gender Badge
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                decoration: BoxDecoration(
-                  color: isMale
-                      ? const Color(0xFFE0F2FE)
-                      : const Color(0xFFFFEDD5),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      isMale ? Icons.male : Icons.female,
-                      size: 14,
-                      color: genderColor,
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      gender,
-                      style: GoogleFonts.plusJakartaSans(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w700,
-                        color: genderColor,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 8),
-
-              // NIM Badge
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF1F5F9),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(
-                      Icons.verified_user_outlined,
-                      size: 13,
-                      color: AppColors.textMuted,
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      'NIM: $nim',
-                      style: GoogleFonts.plusJakartaSans(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.textDark,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
+          Text(
+            value,
+            style: GoogleFonts.plusJakartaSans(
+              fontSize: 13,
+              fontWeight: FontWeight.w700,
+              color: AppColors.textDark,
+            ),
           ),
         ],
       ),
