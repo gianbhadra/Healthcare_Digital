@@ -18,6 +18,13 @@ class _MemberDataScreenState extends State<MemberDataScreen> {
 
   List<Map<String, dynamic>> _membersList = [];
 
+  IconData _memberIcon(dynamic codePoint) {
+    if (codePoint == Icons.person_outline_rounded.codePoint) {
+      return Icons.person_outline_rounded;
+    }
+    return Icons.person_outline_rounded;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -33,8 +40,7 @@ class _MemberDataScreenState extends State<MemberDataScreen> {
           ...m,
           'id': m['id'].toString(),
           'isElderly': m['isElderly'] == 1,
-          // ignore: non_const_argument_for_const_parameter
-          'avatarIcon': IconData(m['avatarIcon'] as int, fontFamily: 'MaterialIcons'),
+          'avatarIcon': _memberIcon(m['avatarIcon']),
         };
       }).toList();
     });
