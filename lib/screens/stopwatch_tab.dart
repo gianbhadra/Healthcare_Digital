@@ -101,7 +101,7 @@ class _StopwatchTabState extends State<StopwatchTab> {
               ),
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.primaryTeal.withValues(alpha: 0.1),
+                  color: AppColors.primaryTeal.withOpacity(0.1),
                   blurRadius: 20,
                   offset: const Offset(0, 8),
                 ),

@@ -67,69 +67,6 @@ class _DashboardTabState extends State<DashboardTab> {
                   ),
                 ],
               ),
-              Row(
-                children: [
-                  // Notification Icon with Red Dot
-                  Stack(
-                    children: [
-                      Container(
-                        width: 44,
-                        height: 44,
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFF1F5F9),
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
-                          Icons.notifications_none_rounded,
-                          color: AppColors.textDark,
-                          size: 22,
-                        ),
-                      ),
-                      Positioned(
-                        right: 10,
-                        top: 10,
-                        child: Container(
-                          width: 8,
-                          height: 8,
-                          decoration: const BoxDecoration(
-                            color: Colors.redAccent,
-                            shape: BoxShape.circle,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(width: 12),
-
-                  // Avatar with Online Status Dot
-                  Stack(
-                    children: [
-                      const CircleAvatar(
-                        radius: 22,
-                        backgroundColor: AppColors.lightTealBg,
-                        child: Icon(
-                          Icons.person,
-                          color: AppColors.primaryTeal,
-                          size: 26,
-                        ),
-                      ),
-                      Positioned(
-                        right: 0,
-                        bottom: 0,
-                        child: Container(
-                          width: 12,
-                          height: 12,
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF10B981),
-                            shape: BoxShape.circle,
-                            border: Border.all(color: Colors.white, width: 2),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
             ],
           ),
           const SizedBox(height: 20),
@@ -142,7 +79,7 @@ class _DashboardTabState extends State<DashboardTab> {
               borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.03),
+                  color: Colors.black.withOpacity(0.03),
                   blurRadius: 16,
                   offset: const Offset(0, 6),
                 ),
@@ -484,7 +421,7 @@ class _ServiceMenuItem extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.02),
+            color: Colors.black.withOpacity(0.02),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),

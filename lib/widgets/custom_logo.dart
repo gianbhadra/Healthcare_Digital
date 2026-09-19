@@ -18,7 +18,7 @@ class HealthCareLogo extends StatelessWidget {
         borderRadius: BorderRadius.circular(size * 0.28),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primaryTeal.withValues(alpha: 0.08),
+            color: AppColors.primaryTeal.withOpacity(0.08),
             blurRadius: 16,
             offset: const Offset(0, 6),
           ),

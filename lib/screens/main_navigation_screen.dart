@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../theme/app_theme.dart';
-import 'dashboard_tab.dart';
-import 'stopwatch_tab.dart';
-import 'help_tab.dart';
 import '../widgets/custom_logo.dart';
+import 'dashboard_tab.dart';
+import 'help_tab.dart';
+import 'profile_tab.dart';
+import 'stopwatch_tab.dart';
 
 class MainNavigationScreen extends StatefulWidget {
   const MainNavigationScreen({super.key});
@@ -15,12 +16,20 @@ class MainNavigationScreen extends StatefulWidget {
 
 class _MainNavigationScreenState extends State<MainNavigationScreen> {
   int _currentIndex = 0;
+  bool _showProfile = false;
 
   final List<Widget> _tabs = const [
     DashboardTab(),
     StopwatchTab(),
     HelpTab(),
   ];
+
+  Widget get _currentBody {
+    if (_showProfile) {
+      return const ProfileTab();
+    }
+    return _tabs[_currentIndex];
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,13 +53,46 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
           ],
         ),
         actions: [
-          const CircleAvatar(
-            radius: 16,
-            backgroundColor: AppColors.lightTealBg,
-            child: Icon(
-              Icons.person,
-              color: AppColors.primaryTeal,
-              size: 20,
+          IconButton(
+            onPressed: () {},
+            icon: Stack(
+              clipBehavior: Clip.none,
+              children: [
+                const Icon(
+                  Icons.notifications_none_rounded,
+                  color: AppColors.textDark,
+                  size: 22,
+                ),
+                Positioned(
+                  right: 0,
+                  top: 0,
+                  child: Container(
+                    width: 8,
+                    height: 8,
+                    decoration: const BoxDecoration(
+                      color: Colors.redAccent,
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 4),
+          GestureDetector(
+            onTap: () {
+              setState(() {
+                _showProfile = true;
+              });
+            },
+            child: const CircleAvatar(
+              radius: 16,
+              backgroundColor: AppColors.lightTealBg,
+              child: Icon(
+                Icons.person,
+                color: AppColors.primaryTeal,
+                size: 20,
+              ),
             ),
           ),
           const SizedBox(width: 16),
@@ -58,7 +100,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
       ),
       body: AnimatedSwitcher(
         duration: const Duration(milliseconds: 200),
-        child: _tabs[_currentIndex],
+        child: _currentBody,
       ),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
@@ -78,6 +120,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
               currentIndex: _currentIndex,
               onTap: (index) {
                 setState(() {
+                  _showProfile = false;
                   _currentIndex = index;
                 });
               },

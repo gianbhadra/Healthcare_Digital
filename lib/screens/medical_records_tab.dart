@@ -69,7 +69,7 @@ class MedicalRecordsTab extends StatelessWidget {
             decoration: BoxDecoration(
               color: AppColors.lightTealBg,
               borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: AppColors.primaryTeal.withValues(alpha: 0.2)),
+              border: Border.all(color: AppColors.primaryTeal.withOpacity(0.2)),
             ),
             child: Row(
               children: [
@@ -120,7 +120,7 @@ class MedicalRecordsTab extends StatelessWidget {
                     borderRadius: BorderRadius.circular(16),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.03),
+                        color: Colors.black.withOpacity(0.03),
                         blurRadius: 10,
                         offset: const Offset(0, 4),
                       ),

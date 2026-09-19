@@ -258,7 +258,7 @@ class _AgeConverterScreenState extends State<AgeConverterScreen> {
                 borderRadius: BorderRadius.circular(20),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.03),
+                    color: Colors.black.withOpacity(0.03),
                     blurRadius: 14,
                     offset: const Offset(0, 6),
                   ),
@@ -381,7 +381,7 @@ class _AgeConverterScreenState extends State<AgeConverterScreen> {
                 borderRadius: BorderRadius.circular(20),
                 boxShadow: [
                   BoxShadow(
-                    color: AppColors.primaryTeal.withValues(alpha: 0.25),
+                    color: AppColors.primaryTeal.withOpacity(0.25),
                     blurRadius: 16,
                     offset: const Offset(0, 8),
                   ),
@@ -395,7 +395,7 @@ class _AgeConverterScreenState extends State<AgeConverterScreen> {
                     style: GoogleFonts.plusJakartaSans(
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
-                      color: Colors.white.withValues(alpha: 0.8),
+                      color: Colors.white.withOpacity(0.8),
                     ),
                   ),
                   const SizedBox(height: 6),
@@ -613,7 +613,7 @@ class _AgeConverterScreenState extends State<AgeConverterScreen> {
                 borderRadius: BorderRadius.circular(20),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.03),
+                    color: Colors.black.withOpacity(0.03),
                     blurRadius: 14,
                     offset: const Offset(0, 6),
                   ),
@@ -710,7 +710,7 @@ class _AgeStatCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
+            color: Colors.black.withOpacity(0.03),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
