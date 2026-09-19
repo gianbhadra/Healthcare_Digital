@@ -30,7 +30,9 @@ app.get('/api/members', async (req, res) => {
 app.post('/api/members', async (req, res) => {
   const { name, age, dob, gender, nik, blood, isElderly, avatarIcon } = req.body;
   try {
-    const query = `INSERT INTO members (name, age, dob, gender, nik, blood, isElderly, avatarIcon) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *`;
+    const query = `INSERT INTO members
+      (name, age, dob, gender, nik, blood, "isElderly", "avatarIcon")
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *`;
     const values = [name, age, dob, gender, nik, blood, isElderly, avatarIcon];
     const result = await pool.query(query, values);
     res.status(201).json(result.rows[0]);

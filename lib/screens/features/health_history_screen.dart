@@ -219,13 +219,26 @@ class _HealthHistoryScreenState extends State<HealthHistoryScreen> {
                                 ),
                               ),
                             ),
-                            Text(
-                              item['date']!,
-                              style: GoogleFonts.plusJakartaSans(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.textMuted,
-                              ),
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  item['date']!,
+                                  style: GoogleFonts.plusJakartaSans(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                    color: AppColors.textMuted,
+                                  ),
+                                ),
+                                IconButton(
+                                  onPressed: () => _showDeleteDialog(item),
+                                  icon: const Icon(Icons.delete_outline_rounded),
+                                  tooltip: 'Hapus riwayat',
+                                  color: Colors.redAccent,
+                                  iconSize: 20,
+                                  visualDensity: VisualDensity.compact,
+                                ),
+                              ],
                             ),
                           ],
                         ),

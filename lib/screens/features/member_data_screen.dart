@@ -26,6 +26,7 @@ class _MemberDataScreenState extends State<MemberDataScreen> {
 
   Future<void> _loadMembers() async {
     final members = await DatabaseHelper.instance.getMembers();
+    if (!mounted) return;
     setState(() {
       _membersList = members.map((m) {
         return {
@@ -208,7 +209,7 @@ class _MemberDataScreenState extends State<MemberDataScreen> {
     );
 
     if (result != null && result is Map<String, dynamic>) {
-      await DatabaseHelper.instance.insertMember({
+      final inserted = await DatabaseHelper.instance.insertMember({
         'name': result['name'],
         'age': result['age'] ?? '20 th',
         'dob': result['dob'] ?? '14 Mei 2004',
@@ -218,8 +219,22 @@ class _MemberDataScreenState extends State<MemberDataScreen> {
         'isElderly': 0,
         'avatarIcon': Icons.person_outline_rounded.codePoint,
       });
-      
-      _loadMembers();
+
+      if (!mounted) return;
+      if (inserted != 1) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Gagal menyimpan anggota. Pastikan server dan database aktif.',
+              style: GoogleFonts.plusJakartaSans(),
+            ),
+            backgroundColor: Colors.redAccent,
+          ),
+        );
+        return;
+      }
+
+      await _loadMembers();
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
